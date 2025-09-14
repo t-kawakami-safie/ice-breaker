@@ -4,7 +4,7 @@ export async function generateRecipe(formData: FormData) {
   const response = await amplifyClient.queries.askBedrock({
     ingredients: [formData.get("ingredients")?.toString() || ""],
   });
-
+  console.log("API Response:", response);
   if (!response.data?.body) {
     alert("APIレスポンスが空です");
     return "";
