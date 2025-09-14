@@ -8,10 +8,10 @@ const backend = defineBackend({
 
 const bedrockDataSource = backend.data.resources.graphqlApi.addHttpDataSource(
   "bedrockDS",
-  "https://bedrock-runtime.us-east-1.amazonaws.com",
+  "https://bedrock-runtime.ap-northeast-1.amazonaws.com", // リージョンを修正
   {
     authorizationConfig: {
-      signingRegion: "us-east-1",
+      signingRegion: "ap-northeast-1", // リージョンを修正
       signingServiceName: "bedrock",
     },
   }
@@ -20,9 +20,8 @@ const bedrockDataSource = backend.data.resources.graphqlApi.addHttpDataSource(
 bedrockDataSource.grantPrincipal.addToPrincipalPolicy(
   new PolicyStatement({
     resources: [
-      "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0",
+      "arn:aws:bedrock:ap-northeast-1::inference-profile/anthropic.claude-3-sonnet-20240229-v1:0",
     ],
     actions: ["bedrock:InvokeModel"],
-    
   })
 );
