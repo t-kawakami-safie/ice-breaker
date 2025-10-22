@@ -44,61 +44,19 @@ export default function Home() {
 
 const onGenerate = async () => {
   setloading(true);
-  try {
-    const url = "https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-3-5-haiku-20241022-v1:0/converse";
-    
-    const payload = {
-      "messages": [
-        {
-          "role": "user",
-          "content": [{"text": "自己開示につながるアイスブレイクの話題を1つ返して。一風変わったものがよいです。そして一人当たりの発表時間も考慮して、話題では3つ教えてとかではなく答えやすいシンプルな話題にしてほしい。レスポンスはアプリでユーザーに表示するのでトピックだけ返してほしい"}]
-        }
-      ],
-      "inferenceConfig": {
-        "temperature": 1.0,     // 0.0〜1.0 (デフォルト: 1.0)
-        "maxTokens": 500,       // 最大トークン数
-        "topP": 0.9,           // トップP sampling (0.0〜1.0)
-        "stopSequences": []     // 停止シーケンス
-      }
-    };
-
-    const headers = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.NEXT_PUBLIC_API_KEY}`
-    };
-
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(payload)
+  const data = await fetch("/api/bedrock", {
+    method: "POST",
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Received data:", data.output.output.message.content[0].text);
+      setResult(data.output.output.message.content[0].text);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Error response:", errorText);
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-    }
-
-    const data = await response.json();
-    
-    // Claudeのレスポンス形式に合わせて調整
-    if (data.output && data.output.message && data.output.message.content) {
-      const content = data.output.message.content[0].text;
-      setResult(content);
-    } else if (data.content && data.content[0] && data.content[0].text) {
-      // 別のレスポンス形式の場合
-      setResult(data.content[0].text);
-    } else {
-      console.log("Unexpected response format:", data);
-      setResult("レスポンスの形式が予期しないものでした: " + JSON.stringify(data));
-    }
-
-  } catch (error) {
-    console.error("API Error:", error);
-  } finally {
-    setloading(false);
-  }
+  setloading(false);
+  
 };
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     setloading(true);
