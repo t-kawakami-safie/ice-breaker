@@ -4,18 +4,24 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
 try {
     const url = "https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-3-5-haiku-20241022-v1:0/converse";
-    
+    const history = (await request.json()).history || [];
+    console.log("Received history:", history);
     const payload = {
       "messages": [
         {
           "role": "user",
-          "content": [{"text": "自己開示につながるアイスブレイクの話題を1つ返して。一風変わったものがよいです。そして一人当たりの発表時間も考慮して、話題では3つ教えてとかではなく答えやすいシンプルな話題にしてほしい。レスポンスはアプリでユーザーに表示するのでトピックだけ返してほしい"}]
+          "content": [{"text": 
+            "ちょっと変わったアイスブレイクの話題を1つ返して。\
+            そして一人当たりの発表時間も考慮して、話題では3つ教えてとかではなくすぐ回答できるようにしたい。\
+            同じ話題が重複しないように注意してください。\
+            レスポンスはアプリでユーザーに表示するのでトピックだけ返してほしい\
+            過去の話題履歴: " + history.join(", ") + ""}]
         }
       ],
       "inferenceConfig": {
         "temperature": 1.0,     // 0.0〜1.0 (デフォルト: 1.0)
         "maxTokens": 500,       // 最大トークン数
-        "topP": 0.9,           // トップP sampling (0.0〜1.0)
+        "topP": 1.0,           // トップP sampling (0.0〜1.0)
         "stopSequences": []     // 停止シーケンス
       }
     };

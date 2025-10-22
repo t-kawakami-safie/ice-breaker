@@ -12,6 +12,7 @@ export default function Home() {
   const [names, setNames] = useState<string[]>([]);
   const [speaker, setSpeaker] = useState<string>("");
   const [spokenNames, setSpokenNames] = useState<string[]>([]);
+  const [history, setHistory] = useState<string[]>([]);
 
 
   const onChangeSpeaker = () => {
@@ -46,14 +47,21 @@ const onGenerate = async () => {
   setloading(true);
   const data = await fetch("/api/bedrock", {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      history: history,
+    }),
   })
     .then((res) => res.json())
     .then((data) => {
-      console.log("Received data:", data.output.output.message.content[0].text);
+      // console.log("Received data:", data.output.output.message.content[0].text);
       setResult(data.output.output.message.content[0].text);
+      setHistory([...history, data.output.output.message.content[0].text]);
     })
     .catch((error) => {
-      console.error("Error fetching data:", error);
+      // console.error("Error fetching data:", error);
     });
   setloading(false);
   
